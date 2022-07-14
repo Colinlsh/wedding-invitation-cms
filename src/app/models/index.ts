@@ -21,17 +21,22 @@ export interface MainState {
   malaysia: LocationModel;
   currentLocation: LocationModel;
   attendanceForm: AttendanceFormModel;
-  singaporeGuests: GuestModel[];
-  malaysiaGuests: GuestModel[];
+  singaporeGuests: UIGuestModel;
+  malaysiaGuests: UIGuestModel;
 }
 
+export type UIGuestModel = {
+  guests: GuestModel[];
+  isLoading: boolean;
+};
+
 export type GuestModel = {
-  invitedBy: string;
-  isAttending: boolean;
-  name: string;
-  rsvpDateTime: string;
   sanitizedName: string;
+  isAttending: boolean;
+  invitedBy: string;
+  name: string;
   dietaryPreference: string;
+  rsvpDateTime: string;
 };
 
 export interface LocationModel {

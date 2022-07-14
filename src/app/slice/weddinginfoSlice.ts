@@ -230,8 +230,14 @@ const weddingInfoSlice: Slice<
       invitedBy: "",
       isLoading: false,
     },
-    singaporeGuests: [],
-    malaysiaGuests: [],
+    singaporeGuests: {
+      isLoading: false,
+      guests: [],
+    },
+    malaysiaGuests: {
+      isLoading: false,
+      guests: [],
+    },
   } as MainState,
   reducers: {
     setModal: (state, action) => {
@@ -310,7 +316,13 @@ const weddingInfoSlice: Slice<
     });
 
     builder.addCase(getGuests.pending, (state, { meta }) => {
-      // state.checkResponse.isLoading = true;
+      const country = meta.arg as string;
+
+      if (country !== constants.SG) {
+        state.malaysiaGuests.isLoading = true;
+      } else {
+        state.singaporeGuests.isLoading = true;
+      }
     });
     builder.addCase(
       getGuests.fulfilled,
@@ -318,9 +330,11 @@ const weddingInfoSlice: Slice<
         let { name, value } = action.payload;
         if (value[0] !== -1) {
           if ((value[0] as string).toLowerCase() === constants.SG) {
-            state.singaporeGuests = value[1];
+            state.singaporeGuests.guests = value[1];
+            state.singaporeGuests.isLoading = false;
           } else {
-            state.malaysiaGuests = value[1];
+            state.malaysiaGuests.guests = value[1];
+            state.malaysiaGuests.isLoading = false;
           }
         } else {
           setErrorModal(value, state);
@@ -328,7 +342,13 @@ const weddingInfoSlice: Slice<
       }
     );
     builder.addCase(getGuests.rejected, (state, { meta }) => {
-      // state.checkResponse.isLoading = false;
+      const country = meta.arg as string;
+
+      if (country !== constants.SG) {
+        state.malaysiaGuests.isLoading = false;
+      } else {
+        state.singaporeGuests.isLoading = false;
+      }
     });
 
     builder.addCase(setAttendance.pending, (state, { meta }) => {

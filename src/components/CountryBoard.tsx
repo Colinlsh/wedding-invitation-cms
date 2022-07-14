@@ -18,8 +18,8 @@ const CountryBoard: React.FC<CountryBoardProps> = ({ country }) => {
 
   useEffect(() => {
     if (
-      weddingInfoState.singaporeGuests.length === 0 ||
-      weddingInfoState.malaysiaGuests.length === 0
+      weddingInfoState.singaporeGuests.guests.length === 0 ||
+      weddingInfoState.malaysiaGuests.guests.length === 0
     ) {
       dispatch(getGuests(country));
     }
