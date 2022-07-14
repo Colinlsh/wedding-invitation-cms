@@ -6,8 +6,9 @@ axios.defaults.baseURL =
     ? process.env.REACT_APP_GCP_FUNCTION_URL
     : process.env.REACT_APP_GCP_FUNCTION_TEST_URL;
 
-console.log(process.env.REACT_APP_GCP_FUNCTION_TEST_URL);
-console.log(process.env.REACT_APP_GCP_FUNCTION_URL);
+// axios.defaults.baseURL = process.env.REACT_APP_GCP_FUNCTION_URL;
+// console.log(process.env.REACT_APP_GCP_FUNCTION_TEST_URL);
+// console.log(process.env.REACT_APP_GCP_FUNCTION_URL);
 
 // axios.interceptors.request.use(
 //   (config) => {

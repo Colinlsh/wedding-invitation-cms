@@ -38,22 +38,22 @@ const Dashboard = () => {
           <div className="bg-slate-100 rounded-lg flex flex-col p-5 h-[49%] justify-center items-center">
             <div>MY Guest Count</div>
             <div className="h-[60%] flex justify-center items-center">
-              {
-                weddingInfoState.malaysiaGuests.filter(
-                  (x) => x.isAttending === true
-                ).length
-              }
+              {weddingInfoState.malaysiaGuests.length === 0
+                ? 0
+                : weddingInfoState.malaysiaGuests.filter(
+                    (x) => x.isAttending === true
+                  ).length}
               /9999
             </div>
           </div>
           <div className="bg-slate-100 rounded-lg flex flex-col p-5 h-[49%] justify-center items-center">
             <div className="h-fit">SG Guest Count</div>
             <div className="h-[60%] flex justify-center items-center">
-              {
-                weddingInfoState.singaporeGuests.filter(
-                  (x) => x.isAttending === true
-                ).length
-              }
+              {weddingInfoState.singaporeGuests.length === 0
+                ? 0
+                : weddingInfoState.malaysiaGuests.filter(
+                    (x) => x.isAttending === true
+                  ).length}
               /9999
             </div>
           </div>
