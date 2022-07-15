@@ -75,7 +75,7 @@ const Dashboard = () => {
               ) : weddingInfoState.singaporeGuests.guests!.length === 0 ? (
                 0
               ) : (
-                weddingInfoState.malaysiaGuests.guests.filter(
+                weddingInfoState.singaporeGuests.guests.filter(
                   (x) => x.isAttending === true
                 ).length
               )}
@@ -88,7 +88,7 @@ const Dashboard = () => {
               ) : weddingInfoState.singaporeGuests.guests!.length === 0 ? (
                 0
               ) : (
-                weddingInfoState.malaysiaGuests.guests.length
+                weddingInfoState.singaporeGuests.guests.length
               )}
               /9999
             </div>
