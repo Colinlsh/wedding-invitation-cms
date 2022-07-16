@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import * as models from "../models";
+import { PaginateRequest } from "../models/common";
 
 axios.defaults.baseURL =
   process.env.NODE_ENV === "production"
@@ -22,7 +23,8 @@ axios.defaults.baseURL =
 const responseBody = (response: AxiosResponse) => response.data;
 
 const requests = {
-  get: (url: string) => axios.get(url).then(responseBody),
+  get: (url: string, params?: {}) =>
+    axios.get(url, { params: params }).then(responseBody),
   post: (url: string, body: {}) => axios.post(url, body).then(responseBody),
   put: (url: string, body: {}) => axios.put(url, body).then(responseBody),
   del: (url: string) => axios.delete(url).then(responseBody),
@@ -32,7 +34,8 @@ const WeddingInfo = {
   location: (id: string) => requests.get(`/location/${id}`),
   attendance: (attendanceFormProps: models.AttendanceFormModel) =>
     requests.post(`/guest/attendance`, attendanceFormProps),
-  guests: (country: string) => requests.get(`/guests/${country}`),
+  guests: (paginateRequest: PaginateRequest) =>
+    requests.get(`/guests`, paginateRequest),
   dashboard: () => requests.get(`/dashboard`),
 };
 

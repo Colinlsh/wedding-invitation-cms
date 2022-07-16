@@ -103,7 +103,7 @@ const Dashboard = () => {
             <img src="/assets/malaysia.svg" alt="sgs" className="h-5" />
           </div>
           <Table
-            tableHeaders={["name", "invited By", "rsvp Datetime"]}
+            tableHeaders={["name", "invited By", "rsvp Datetime", "Attending?"]}
             tableItems={weddingInfoState.dashboard!.my.guests}
           />
         </div>
@@ -112,7 +112,7 @@ const Dashboard = () => {
             <img src="/assets/singapore.svg" alt="sgs" className="h-5" />
           </div>
           <Table
-            tableHeaders={["name", "invited By", "rsvp Datetime"]}
+            tableHeaders={["name", "invited By", "rsvp Datetime", "Attending?"]}
             tableItems={weddingInfoState.dashboard!.sg.guests}
           />
         </div>

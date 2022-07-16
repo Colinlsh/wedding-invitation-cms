@@ -1,4 +1,5 @@
 import React from "react";
+import { PaginationDto as PaginationDto } from "./common";
 
 export interface KeyValuePair {
   name: string;
@@ -17,8 +18,8 @@ export interface UIControlState {
 export interface MainState {
   modal: ModalModel;
   alert: AlertModel;
-  singapore: LocationModel;
-  malaysia: LocationModel;
+  singapore: PaginationDto;
+  malaysia: PaginationDto;
   attendanceForm: AttendanceFormModel;
   dashboard: DashboardDto | undefined;
 }

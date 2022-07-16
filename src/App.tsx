@@ -11,8 +11,7 @@ function App() {
     <div className="w-full h-full">
       <Routes>
         <Route path="*" element={<Page404 />} />
-        <Route path="/sg" element={<CountryBoard country="sg" />} />
-        <Route path="/my" element={<CountryBoard country="my" />} />
+        <Route path="/:slug" element={<CountryBoard />} />
         <Route path="/" element={<Dashboard />} />
       </Routes>
     </div>

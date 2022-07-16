@@ -1,4 +1,9 @@
-import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
+import {
+  configureStore,
+  ThunkAction,
+  Action,
+  getDefaultMiddleware,
+} from "@reduxjs/toolkit";
 import uiControlSlice from "./slice/uiControlSlice";
 import weddinginfoSlice from "./slice/weddinginfoSlice";
 
@@ -7,6 +12,10 @@ export const store = configureStore({
     uiState: uiControlSlice,
     weddingInfoState: weddinginfoSlice,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 });
 
 export type AppDispatch = typeof store.dispatch;

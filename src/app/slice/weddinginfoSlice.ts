@@ -16,6 +16,7 @@ import {
   MainState,
   ModalModel,
 } from "../models";
+import { PaginateRequest } from "../models/common";
 import * as constants from "../utils/constants";
 
 // #region Async thunk
@@ -41,13 +42,13 @@ export const getLocation = createAsyncThunk(
 
 export const getGuests = createAsyncThunk(
   "weddingInfo/getGuests",
-  async (country: string) => {
+  async (paginateRequest: PaginateRequest) => {
     try {
-      const response = await agent.WeddingInfo.guests(country);
+      const response = await agent.WeddingInfo.guests(paginateRequest);
 
       return {
         name: "guests",
-        value: [country, response],
+        value: [paginateRequest, response],
       };
     } catch (error) {
       return {
@@ -57,63 +58,6 @@ export const getGuests = createAsyncThunk(
     }
   }
 );
-
-// export const checkGuestList = createAsyncThunk(
-//   "weddingInfo/checkGuestList",
-//   async (attendanceFormProps: AttendanceFormProps) => {
-//     try {
-//       const response = await agent.WeddingInfo.checkguest(attendanceFormProps);
-
-//       return {
-//         name: "attendance",
-//         value: [response],
-//       };
-//     } catch (error) {
-//       return {
-//         name: "",
-//         value: [-1, (error as any).code, (error as any).message],
-//       } as KeyValuePair;
-//     }
-//   }
-// );
-
-// export const setNotAttending = createAsyncThunk(
-//   "weddingInfo/setNotAttending",
-//   async (attendanceFormProps: AttendanceFormProps) => {
-//     try {
-//       const response = await agent.WeddingInfo.attend(attendanceFormProps);
-
-//       return {
-//         name: "attendance",
-//         value: [response],
-//       };
-//     } catch (error) {
-//       return {
-//         name: "",
-//         value: [-1, (error as any).code, (error as any).message],
-//       } as KeyValuePair;
-//     }
-//   }
-// );
-
-// export const setAttend = createAsyncThunk(
-//   "weddingInfo/setAttend",
-//   async (attendanceFormProps: AttendanceFormProps) => {
-//     try {
-//       const response = await agent.WeddingInfo.attend(attendanceFormProps);
-
-//       return {
-//         name: "attendance",
-//         value: [response],
-//       };
-//     } catch (error) {
-//       return {
-//         name: "",
-//         value: [-1, (error as any).code, (error as any).message],
-//       } as KeyValuePair;
-//     }
-//   }
-// );
 
 export const setAttendance = createAsyncThunk(
   "weddingInfo/setAttendance",
@@ -161,57 +105,19 @@ const weddingInfoSlice: Slice<
   name: "essentialoils",
   initialState: {
     singapore: {
-      name: "Park Royal Pickering",
-      address: "3 Upper Pickering St, Singapore 058289",
-      datetime: "22 October 2022 12:30 PM",
-      coordinates: {
-        lat: 1.285776755572009,
-        lng: 103.8461034086686,
-      },
-      code: "SG",
-      theme: {
-        name: "haha",
-        colors: ["green", "white"],
-      },
-      schedule: {
-        items: [
-          {
-            eventName: "Pre-event Cocktail",
-            time: "12:00 pm",
-          },
-          {
-            eventName: "Lunch",
-            time: "1:00 pm",
-          },
-        ],
-      },
-    } as LocationModel,
+      currentPageNumber: 1,
+      totalRecords: 0,
+      totalPage: 1,
+      items: [],
+      isLoading: false,
+    },
     malaysia: {
-      name: "Averie Hous",
-      address: "6W, Jalan Siput Kepah, 10250 George Town, Penang",
-      coordinates: {
-        lat: 5.44716074782574,
-        lng: 100.30604456771344,
-      },
-      datetime: "14 October 2022 6:00 PM",
-      code: "MY",
-      theme: {
-        name: "rustic",
-        colors: ["green", "white"],
-      },
-      schedule: {
-        items: [
-          {
-            eventName: "Garden Wedding/Cocktail",
-            time: "5:00 pm",
-          },
-          {
-            eventName: "Dinner",
-            time: "6:30 pm",
-          },
-        ],
-      },
-    } as LocationModel,
+      currentPageNumber: 1,
+      totalRecords: 0,
+      totalPage: 1,
+      items: [],
+      isLoading: false,
+    },
     modal: {
       header: "",
       message: "",
@@ -312,63 +218,65 @@ const weddingInfoSlice: Slice<
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(getLocation.pending, (state, { meta }) => {
-      // state.checkResponse.isLoading = true;
-    });
-    builder.addCase(
-      getLocation.fulfilled,
-      (state, action: PayloadAction<KeyValuePair>) => {
-        let { name, value } = action.payload;
-        if (value[0] !== -1) {
-          if ((value[0] as string).toLocaleUpperCase() === "SG") {
-            state.singapore = value[1];
-          } else {
-            state.malaysia = value[1];
-          }
-        } else {
-          setErrorModal(value, state);
-        }
-      }
-    );
-    builder.addCase(getLocation.rejected, (state, { meta }) => {
-      // state.checkResponse.isLoading = false;
-    });
-
-    // builder.addCase(getGuests.pending, (state, { meta }) => {
-    //   const country = meta.arg as string;
-
-    //   if (country !== constants.SG) {
-    //     state.malaysiaGuests.isLoading = true;
-    //   } else {
-    //     state.singaporeGuests.isLoading = true;
-    //   }
+    // builder.addCase(getLocation.pending, (state, { meta }) => {
+    //   // state.checkResponse.isLoading = true;
     // });
     // builder.addCase(
-    //   getGuests.fulfilled,
+    //   getLocation.fulfilled,
     //   (state, action: PayloadAction<KeyValuePair>) => {
     //     let { name, value } = action.payload;
     //     if (value[0] !== -1) {
-    //       if ((value[0] as string).toLowerCase() === constants.SG) {
-    //         state.singaporeGuests.guests = value[1];
-    //         state.singaporeGuests.isLoading = false;
+    //       if ((value[0] as string).toLocaleUpperCase() === "SG") {
+    //         state.singapore = value[1];
     //       } else {
-    //         state.malaysiaGuests.guests = value[1];
-    //         state.malaysiaGuests.isLoading = false;
+    //         state.malaysia = value[1];
     //       }
     //     } else {
     //       setErrorModal(value, state);
     //     }
     //   }
     // );
-    // builder.addCase(getGuests.rejected, (state, { meta }) => {
-    //   const country = meta.arg as string;
-
-    //   if (country !== constants.SG) {
-    //     state.malaysiaGuests.isLoading = false;
-    //   } else {
-    //     state.singaporeGuests.isLoading = false;
-    //   }
+    // builder.addCase(getLocation.rejected, (state, { meta }) => {
+    //   // state.checkResponse.isLoading = false;
     // });
+
+    builder.addCase(getGuests.pending, (state, { meta }) => {
+      const country = (meta.arg as PaginateRequest).country;
+
+      if (country !== constants.SG) {
+        state.malaysia.isLoading = true;
+      } else {
+        state.singapore.isLoading = true;
+      }
+    });
+    builder.addCase(
+      getGuests.fulfilled,
+      (state, action: PayloadAction<KeyValuePair>) => {
+        let { name, value } = action.payload;
+        if (value[0] !== -1) {
+          if (
+            (value[0] as PaginateRequest).country.toLowerCase() === constants.SG
+          ) {
+            state.singapore = value[1];
+            state.singapore.isLoading = false;
+          } else {
+            state.malaysia = value[1];
+            state.malaysia.isLoading = false;
+          }
+        } else {
+          setErrorModal(value, state);
+        }
+      }
+    );
+    builder.addCase(getGuests.rejected, (state, { meta }) => {
+      const country = (meta.arg as PaginateRequest).country;
+
+      if (country !== constants.SG) {
+        state.malaysia.isLoading = false;
+      } else {
+        state.singapore.isLoading = false;
+      }
+    });
 
     builder.addCase(getDashboard.pending, (state, { meta }) => {
       state.dashboard!.isLoading = true;
