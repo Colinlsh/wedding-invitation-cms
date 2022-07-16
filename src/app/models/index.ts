@@ -19,11 +19,30 @@ export interface MainState {
   alert: AlertModel;
   singapore: LocationModel;
   malaysia: LocationModel;
-  currentLocation: LocationModel;
   attendanceForm: AttendanceFormModel;
-  singaporeGuests: UIGuestModel;
-  malaysiaGuests: UIGuestModel;
+  dashboard: DashboardDto | undefined;
 }
+
+export type CountryDataDto = {
+  guests: GuestModel[];
+  accepted: number;
+  declined: number;
+  total: number;
+  expectedGuest: number;
+};
+
+export type CountDownDaysDto = {
+  eventDate: Date;
+  till: number;
+};
+
+export type DashboardDto = {
+  sg: CountryDataDto;
+  my: CountryDataDto;
+  sgDatetime: CountDownDaysDto;
+  myDatetime: CountDownDaysDto;
+  isLoading: boolean;
+};
 
 export type UIGuestModel = {
   guests: GuestModel[];

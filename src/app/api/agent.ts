@@ -33,6 +33,7 @@ const WeddingInfo = {
   attendance: (attendanceFormProps: models.AttendanceFormModel) =>
     requests.post(`/guest/attendance`, attendanceFormProps),
   guests: (country: string) => requests.get(`/guests/${country}`),
+  dashboard: () => requests.get(`/dashboard`),
 };
 
 export default {

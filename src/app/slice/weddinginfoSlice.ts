@@ -10,6 +10,7 @@ import {
   AlertModel,
   AttendanceFormModel,
   AttendanceFormProps,
+  DashboardDto,
   KeyValuePair,
   LocationModel,
   MainState,
@@ -133,6 +134,25 @@ export const setAttendance = createAsyncThunk(
   }
 );
 
+export const getDashboard = createAsyncThunk(
+  "weddingInfo/getDashboard",
+  async () => {
+    try {
+      const response = await agent.WeddingInfo.dashboard();
+
+      return {
+        name: "dashboard",
+        value: [response],
+      };
+    } catch (error) {
+      return {
+        name: "",
+        value: [-1, (error as any).code, (error as any).message],
+      } as KeyValuePair;
+    }
+  }
+);
+
 const weddingInfoSlice: Slice<
   MainState,
   SliceCaseReducers<MainState>,
@@ -192,23 +212,6 @@ const weddingInfoSlice: Slice<
         ],
       },
     } as LocationModel,
-    currentLocation: {
-      name: "",
-      address: "",
-      datetime: "",
-      coordinates: {
-        lat: 0,
-        lng: 0,
-      },
-      code: "",
-      theme: {
-        name: "",
-        colors: [],
-      },
-      schedule: {
-        items: [],
-      },
-    } as LocationModel,
     modal: {
       header: "",
       message: "",
@@ -230,14 +233,33 @@ const weddingInfoSlice: Slice<
       invitedBy: "",
       isLoading: false,
     },
-    singaporeGuests: {
+    dashboard: {
+      sg: {
+        guests: [],
+        accepted: 0,
+        declined: 0,
+        total: 0,
+        expectedGuest: 0,
+      },
+      my: {
+        guests: [],
+        accepted: 0,
+        declined: 0,
+        total: 0,
+        expectedGuest: 0,
+      },
+      sgDatetime: {
+        eventDate: new Date(0),
+        numberOfGuest: 120,
+        till: 0,
+      },
+      myDatetime: {
+        eventDate: new Date(0),
+        numberOfGuest: 100,
+        till: 0,
+      },
       isLoading: false,
-      guests: [],
-    },
-    malaysiaGuests: {
-      isLoading: false,
-      guests: [],
-    },
+    } as DashboardDto,
   } as MainState,
   reducers: {
     setModal: (state, action) => {
@@ -288,9 +310,6 @@ const weddingInfoSlice: Slice<
     setInvitedBy: (state, action) => {
       state.attendanceForm.invitedBy = action.payload;
     },
-    setLocation: (state, action) => {
-      state.currentLocation = action.payload;
-    },
   },
   extraReducers: (builder) => {
     builder.addCase(getLocation.pending, (state, { meta }) => {
@@ -315,40 +334,59 @@ const weddingInfoSlice: Slice<
       // state.checkResponse.isLoading = false;
     });
 
-    builder.addCase(getGuests.pending, (state, { meta }) => {
-      const country = meta.arg as string;
+    // builder.addCase(getGuests.pending, (state, { meta }) => {
+    //   const country = meta.arg as string;
 
-      if (country !== constants.SG) {
-        state.malaysiaGuests.isLoading = true;
-      } else {
-        state.singaporeGuests.isLoading = true;
-      }
+    //   if (country !== constants.SG) {
+    //     state.malaysiaGuests.isLoading = true;
+    //   } else {
+    //     state.singaporeGuests.isLoading = true;
+    //   }
+    // });
+    // builder.addCase(
+    //   getGuests.fulfilled,
+    //   (state, action: PayloadAction<KeyValuePair>) => {
+    //     let { name, value } = action.payload;
+    //     if (value[0] !== -1) {
+    //       if ((value[0] as string).toLowerCase() === constants.SG) {
+    //         state.singaporeGuests.guests = value[1];
+    //         state.singaporeGuests.isLoading = false;
+    //       } else {
+    //         state.malaysiaGuests.guests = value[1];
+    //         state.malaysiaGuests.isLoading = false;
+    //       }
+    //     } else {
+    //       setErrorModal(value, state);
+    //     }
+    //   }
+    // );
+    // builder.addCase(getGuests.rejected, (state, { meta }) => {
+    //   const country = meta.arg as string;
+
+    //   if (country !== constants.SG) {
+    //     state.malaysiaGuests.isLoading = false;
+    //   } else {
+    //     state.singaporeGuests.isLoading = false;
+    //   }
+    // });
+
+    builder.addCase(getDashboard.pending, (state, { meta }) => {
+      state.dashboard!.isLoading = true;
     });
     builder.addCase(
-      getGuests.fulfilled,
+      getDashboard.fulfilled,
       (state, action: PayloadAction<KeyValuePair>) => {
         let { name, value } = action.payload;
         if (value[0] !== -1) {
-          if ((value[0] as string).toLowerCase() === constants.SG) {
-            state.singaporeGuests.guests = value[1];
-            state.singaporeGuests.isLoading = false;
-          } else {
-            state.malaysiaGuests.guests = value[1];
-            state.malaysiaGuests.isLoading = false;
-          }
+          state.dashboard = value[0];
         } else {
           setErrorModal(value, state);
         }
+        state.dashboard!.isLoading = false;
       }
     );
-    builder.addCase(getGuests.rejected, (state, { meta }) => {
-      const country = meta.arg as string;
-
-      if (country !== constants.SG) {
-        state.malaysiaGuests.isLoading = false;
-      } else {
-        state.singaporeGuests.isLoading = false;
-      }
+    builder.addCase(getDashboard.rejected, (state, { meta }) => {
+      state.dashboard!.isLoading = false;
     });
 
     builder.addCase(setAttendance.pending, (state, { meta }) => {

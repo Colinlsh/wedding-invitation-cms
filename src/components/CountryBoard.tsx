@@ -16,14 +16,14 @@ const CountryBoard: React.FC<CountryBoardProps> = ({ country }) => {
   const dispatch = useAppDispatch();
   // #endregion
 
-  useEffect(() => {
-    if (
-      weddingInfoState.singaporeGuests.guests.length === 0 ||
-      weddingInfoState.malaysiaGuests.guests.length === 0
-    ) {
-      dispatch(getGuests(country));
-    }
-  }, [country]);
+  // useEffect(() => {
+  //   if (
+  //     weddingInfoState.singaporeGuests.guests.length === 0 ||
+  //     weddingInfoState.malaysiaGuests.guests.length === 0
+  //   ) {
+  //     dispatch(getGuests(country));
+  //   }
+  // }, [country]);
 
   return (
     <div className="w-full h-full p-5">
