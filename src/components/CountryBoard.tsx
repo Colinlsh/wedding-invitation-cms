@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
-import { PaginateRequest } from "../app/models/common";
+import { PaginateRequest, PaginationDto } from "../app/models/common";
 import { getGuests } from "../app/slice/weddinginfoSlice";
 import { RootState } from "../app/store";
 import * as constants from "../app/utils/constants";
+import LoadingBackdrop from "./ui/LoadingBackdrop";
 import Table from "./ui/table/Table";
 
 interface CountryBoardProps {}
@@ -16,9 +17,10 @@ const CountryBoard: React.FC<CountryBoardProps> = ({}) => {
   );
   const dispatch = useAppDispatch();
   let { slug: slug } = useParams();
+  const [data, setData] = useState<PaginationDto>();
   // #endregion
 
-  const handleOnPageClick = (pageNum: number) => {
+  const handleOnPageNumClick = (pageNum: number) => {
     dispatch(
       getGuests({
         ...paginateParams,
@@ -26,14 +28,19 @@ const CountryBoard: React.FC<CountryBoardProps> = ({}) => {
         country: slug!,
       })
     );
+    paginateParams = {
+      ...paginateParams,
+      currentPageNumber: pageNum,
+      country: slug!,
+    };
   };
 
-  const [paginateParams, setPaginateParams] = useState<PaginateRequest>({
+  let paginateParams = {
     country: slug!,
     currentPageNumber: 1,
     pageSize: 10,
     orderBy: "sortOrder",
-  });
+  } as PaginateRequest;
 
   useEffect(() => {
     if (
@@ -41,7 +48,14 @@ const CountryBoard: React.FC<CountryBoardProps> = ({}) => {
       weddingInfoState.malaysia.totalRecords === 0
     ) {
       dispatch(getGuests({ ...paginateParams, country: slug! }));
+      paginateParams = { ...paginateParams, country: slug! };
     }
+
+    setData(
+      slug! === constants.SG
+        ? weddingInfoState.singapore
+        : weddingInfoState.malaysia
+    );
   }, [slug]);
 
   return (
@@ -59,20 +73,38 @@ const CountryBoard: React.FC<CountryBoardProps> = ({}) => {
         CountryBoard
       </h1>
       <div className="drop-shadow-xl rounded-lg h-[95%]">
-        <Table
-          tableHeaders={["name", "rsvp datetime", "invited by", "attending?"]}
-          tableItems={
-            slug! === constants.SG
-              ? weddingInfoState.singapore.items
-              : weddingInfoState.malaysia.items
-          }
-          pagination={
-            slug! === constants.SG
-              ? weddingInfoState.singapore
-              : weddingInfoState.malaysia
-          }
-          onPageClick={handleOnPageClick}
-        />
+        {data !== undefined ? (
+          data!.isLoading ? (
+            <LoadingBackdrop
+              backdropClassname="transparent"
+              spinnerClassname="text-black"
+            />
+          ) : (
+            <Table
+              tableHeaders={[
+                "name",
+                "rsvp datetime",
+                "invited by",
+                "attending?",
+              ]}
+              tableItems={
+                slug! === constants.SG
+                  ? weddingInfoState.singapore.items
+                  : weddingInfoState.malaysia.items
+              }
+              pagination={
+                slug! === constants.SG
+                  ? weddingInfoState.singapore
+                  : weddingInfoState.malaysia
+              }
+              onPageNumClick={handleOnPageNumClick}
+              isFiltering={true}
+              filterBy={["Yes/No", "Yes", "No"]}
+            />
+          )
+        ) : (
+          <></>
+        )}
       </div>
     </div>
   );
