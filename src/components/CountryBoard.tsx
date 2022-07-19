@@ -1,12 +1,15 @@
+import { FormikProps, useFormik } from "formik";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
+import { TableFilterFormProps } from "../app/models";
 import { PaginateRequest, PaginationDto } from "../app/models/common";
 import { getGuests } from "../app/slice/weddinginfoSlice";
 import { RootState } from "../app/store";
 import * as constants from "../app/utils/constants";
 import LoadingBackdrop from "./ui/LoadingBackdrop";
 import Table from "./ui/table/Table";
+import * as Yup from "yup";
 
 interface CountryBoardProps {}
 
@@ -18,6 +21,16 @@ const CountryBoard: React.FC<CountryBoardProps> = ({}) => {
   const dispatch = useAppDispatch();
   let { slug: slug } = useParams();
   const [data, setData] = useState<PaginationDto>();
+  const [paginateParams, setPaginateParams] = useState({
+    country: slug!,
+    currentPageNumber: 1,
+    pageSize: 10,
+    orderBy: "sortOrder",
+    orderByDirection: "desc",
+    searchString: "",
+    isAttendingFilter: "",
+    invitedBy: "",
+  });
   // #endregion
 
   const handleOnPageNumClick = (pageNum: number) => {
@@ -28,35 +41,115 @@ const CountryBoard: React.FC<CountryBoardProps> = ({}) => {
         country: slug!,
       })
     );
-    paginateParams = {
+    setPaginateParams({
       ...paginateParams,
       currentPageNumber: pageNum,
       country: slug!,
-    };
+    });
   };
 
-  let paginateParams = {
-    country: slug!,
-    currentPageNumber: 1,
-    pageSize: 10,
-    orderBy: "sortOrder",
-  } as PaginateRequest;
+  // let paginateParams = {
+  //   country: slug!,
+  //   currentPageNumber: 1,
+  //   pageSize: 10,
+  //   orderBy: "sortOrder",
+  //   orderByDirection: "desc",
+  //   searchString: "",
+  //   isAttendingFilter: "",
+  //   invitedBy: "",
+  // } as PaginateRequest;
+
+  const FilterByValidation = Yup.object({
+    name: Yup.string()
+      .min(2, "too short")
+      .max(50, "too long")
+      .matches(
+        /^[-'a-z \u4e00-\u9eff]{1,50}$/i,
+        "Only alphabets / chinese characters"
+      ),
+    pageSize: Yup.number()
+      .typeError("you must specify a number")
+      .positive()
+      .lessThan(50, "Maximum 50 records")
+      .moreThan(1, "Minimum 1 records"),
+  });
+
+  const filterInputFormik: FormikProps<TableFilterFormProps> =
+    useFormik<TableFilterFormProps>({
+      initialValues: {
+        name: "",
+        pageSize: 10,
+        filterBy: "Yes/No",
+      },
+      validationSchema: FilterByValidation,
+      onSubmit: (values, { resetForm }) => {
+        console.log(values);
+
+        setPaginateParams({
+          ...paginateParams,
+          searchString: values.name,
+          pageSize: values.pageSize,
+          isAttendingFilter:
+            values.filterBy === "Yes"
+              ? "true"
+              : values.filterBy === "Yes/No"
+              ? ""
+              : "false",
+        });
+
+        dispatch(
+          getGuests({
+            ...paginateParams,
+            currentPageNumber: 1,
+            searchString: values.name,
+            pageSize: values.pageSize,
+            isAttendingFilter:
+              values.filterBy === "Yes"
+                ? "true"
+                : values.filterBy === "Yes/No"
+                ? ""
+                : "false",
+          })
+        );
+      },
+    });
 
   useEffect(() => {
-    if (
-      weddingInfoState.singapore.totalRecords === 0 ||
-      weddingInfoState.malaysia.totalRecords === 0
-    ) {
-      dispatch(getGuests({ ...paginateParams, country: slug! }));
-      paginateParams = { ...paginateParams, country: slug! };
-    }
+    // if (
+    //   weddingInfoState.singapore.totalRecords === 0 ||
+    //   weddingInfoState.malaysia.totalRecords === 0
+    // ) {
+
+    // }
+
+    dispatch(
+      getGuests({
+        ...paginateParams,
+        currentPageNumber: 1,
+        pageSize: 10,
+        orderBy: "sortOrder",
+        orderByDirection: "desc",
+        searchString: "",
+        isAttendingFilter: "",
+        invitedBy: "",
+        country: slug!,
+      })
+    );
+
+    setPaginateParams({
+      ...paginateParams,
+      currentPageNumber: 1,
+      country: slug!,
+    });
 
     setData(
       slug! === constants.SG
         ? weddingInfoState.singapore
         : weddingInfoState.malaysia
     );
-  }, [slug]);
+
+    filterInputFormik.resetForm();
+  }, [slug!]);
 
   return (
     <div className="w-full h-full p-5">
@@ -72,7 +165,7 @@ const CountryBoard: React.FC<CountryBoardProps> = ({}) => {
         )}
         CountryBoard
       </h1>
-      <div className="drop-shadow-xl rounded-lg h-[95%]">
+      <div className="drop-shadow-xl rounded-lg h-[90%]">
         {data !== undefined ? (
           data!.isLoading ? (
             <LoadingBackdrop
@@ -100,6 +193,12 @@ const CountryBoard: React.FC<CountryBoardProps> = ({}) => {
               onPageNumClick={handleOnPageNumClick}
               isFiltering={true}
               filterBy={["Yes/No", "Yes", "No"]}
+              filterFormik={filterInputFormik}
+              countryData={
+                slug! === constants.SG
+                  ? weddingInfoState.dashboard!.sg
+                  : weddingInfoState.dashboard!.my
+              }
             />
           )
         ) : (

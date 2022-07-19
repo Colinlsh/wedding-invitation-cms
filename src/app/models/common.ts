@@ -10,5 +10,9 @@ export type PaginateRequest = {
   currentPageNumber: number;
   pageSize: number;
   orderBy: string;
+  orderByDirection: string;
   country: string;
+  searchString: string;
+  isAttendingFilter?: string;
+  invitedBy?: string;
 };

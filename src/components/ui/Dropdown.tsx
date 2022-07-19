@@ -1,57 +1,54 @@
-import React, { useState } from "react";
+import { FormikProps } from "formik";
+import React, { useEffect, useState } from "react";
 import { IoIosArrowDropdown, IoIosArrowDropup } from "react-icons/io";
+import { TableFilterFormProps } from "../../app/models";
 
 interface DropdownProps {
   filters: string[];
   onSelected?: (selected: string) => void;
+  onChange?: React.ChangeEventHandler<HTMLSelectElement> | undefined;
+  value: string;
 }
 
-const Dropdown: React.FC<DropdownProps> = ({ filters, onSelected }) => {
+const Dropdown: React.FC<DropdownProps> = ({
+  filters,
+  onSelected,
+  value,
+  onChange,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selected, setSelected] = useState(filters[0]);
+  const [label, setLabel] = useState(value);
+
   return (
-    <div className="relative p-3 border rounded text-gray-600 z-10 w-full flex items-center">
-      <div className="w-[90%]">{selected}</div>
-      <div
-        className={`transition-all w-full duration-500 absolute top-1 left-0 px-3 bg-white ${
-          isOpen ? "translate-y-10 opacity-1 z-0" : "opacity-0 -z-10"
-        }`}
+    <div
+      className="relative border rounded text-gray-600 z-10 w-full flex items-center"
+      style={{ height: "2rem" }}
+    >
+      <select
+        className="border-0 w-full h-full"
+        style={{ borderRadius: "0.5rem", border: "0px" }}
+        value={value}
+        onChange={onChange!}
       >
         {filters!.map((x, index) => (
-          <div
+          <option
             key={`${index}${x}`}
-            className={`text-sm text-gray-600 border-0 py-2 cursor-pointer ${
+            style={{ borderStyle: "none" }}
+            className={`transition-all duration-2000 text-sm text-gray-600 border-0 cursor-pointer ${
               filters.length - 1 === index ? "" : "border-b-2"
             }`}
             onClick={() => {
-              setSelected(x);
               setIsOpen(false);
-              onSelected!(x);
+              if (onSelected !== undefined) {
+                onSelected!(x);
+              }
+              setLabel(x);
             }}
           >
             {x}
-          </div>
+          </option>
         ))}
-      </div>
-      <div className="w-fit cursor-pointer z-10">
-        {isOpen ? (
-          <IoIosArrowDropup
-            size={20}
-            onClick={(e) => {
-              e.preventDefault();
-              setIsOpen(false);
-            }}
-          />
-        ) : (
-          <IoIosArrowDropdown
-            size={20}
-            onClick={(e) => {
-              e.preventDefault();
-              setIsOpen(true);
-            }}
-          />
-        )}
-      </div>
+      </select>
     </div>
   );
 };

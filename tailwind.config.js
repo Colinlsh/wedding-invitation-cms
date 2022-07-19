@@ -61,6 +61,9 @@ module.exports = {
       borderWidth: {
         thin: "1px",
       },
+      zIndex: {
+        max: "9999",
+      },
     },
   },
   plugins: [],

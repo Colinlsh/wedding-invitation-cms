@@ -121,3 +121,9 @@ export interface ScheduleItem {
   time: string;
   eventName: string;
 }
+
+export interface TableFilterFormProps {
+  name: string;
+  pageSize: number;
+  filterBy: string;
+}

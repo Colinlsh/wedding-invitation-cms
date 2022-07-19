@@ -245,8 +245,10 @@ const weddingInfoSlice: Slice<
 
       if (country !== constants.SG) {
         state.malaysia.isLoading = true;
+        state.malaysia.items = [];
       } else {
         state.singapore.isLoading = true;
+        state.singapore.items = [];
       }
     });
     builder.addCase(
