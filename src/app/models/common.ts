@@ -1,3 +1,5 @@
+import { GuestModel } from ".";
+
 export type PaginationDto = {
   currentPageNumber: number;
   totalRecords: number;
@@ -15,4 +17,20 @@ export type PaginateRequest = {
   searchString: string;
   isAttendingFilter?: string;
   invitedBy?: string;
+};
+
+export type SwipingState = {
+  left: number;
+  originalOffset: number;
+  velocity: number;
+  timeOfLastDragEvent: number;
+  touchStartX: number;
+  prevTouchX: number;
+  beingTouched: boolean;
+  height: number;
+};
+
+export type UpdateGuest = {
+  guest: GuestModel;
+  country: string;
 };

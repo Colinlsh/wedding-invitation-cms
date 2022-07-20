@@ -57,6 +57,8 @@ export type GuestModel = {
   name: string;
   dietaryPreference: string;
   rsvpDateTime: string;
+  country?: string;
+  isActive?: boolean;
 };
 
 export interface LocationModel {

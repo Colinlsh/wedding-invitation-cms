@@ -11,12 +11,12 @@ import {
   AttendanceFormModel,
   AttendanceFormProps,
   DashboardDto,
+  GuestModel,
   KeyValuePair,
-  LocationModel,
   MainState,
   ModalModel,
 } from "../models";
-import { PaginateRequest } from "../models/common";
+import { PaginateRequest, UpdateGuest } from "../models/common";
 import * as constants from "../utils/constants";
 
 // #region Async thunk
@@ -86,6 +86,25 @@ export const getDashboard = createAsyncThunk(
 
       return {
         name: "dashboard",
+        value: [response],
+      };
+    } catch (error) {
+      return {
+        name: "",
+        value: [-1, (error as any).code, (error as any).message],
+      } as KeyValuePair;
+    }
+  }
+);
+
+export const updateGuest = createAsyncThunk(
+  "weddingInfo/updateGuest",
+  async (updateGuest: UpdateGuest) => {
+    try {
+      const response = await agent.WeddingInfo.updateGuest(updateGuest);
+
+      return {
+        name: "delete",
         value: [response],
       };
     } catch (error) {
@@ -317,6 +336,24 @@ const weddingInfoSlice: Slice<
     builder.addCase(setAttendance.rejected, (state, { meta }) => {
       state.attendanceForm.isLoading = false;
     });
+
+    builder.addCase(updateGuest.pending, (state, { meta }) => {});
+    builder.addCase(
+      updateGuest.fulfilled,
+      (state, action: PayloadAction<KeyValuePair>) => {
+        let { name, value } = action.payload;
+        if (value[0] !== -1) {
+          if ((value[0] as string).toLowerCase() === constants.SG) {
+            state.singapore = value[1];
+          } else {
+            state.malaysia = value[1];
+          }
+        } else {
+          setErrorModal(value, state);
+        }
+      }
+    );
+    builder.addCase(updateGuest.rejected, (state, { meta }) => {});
   },
 });
 

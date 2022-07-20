@@ -1,12 +1,19 @@
 import { FormikProps } from "formik";
-import React, { DetailedHTMLProps, HTMLAttributes } from "react";
+import React, {
+  DetailedHTMLProps,
+  HTMLAttributes,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   CountryDataDto,
   GuestModel,
   TableFilterFormProps,
 } from "../../../app/models";
-import { PaginationDto } from "../../../app/models/common";
+import { PaginationDto, SwipingState } from "../../../app/models/common";
 import Dropdown from "../Dropdown";
+import TableSwipeItem from "./TableSwipeItem";
 
 interface TableProps {
   tableItems: GuestModel[];
@@ -19,6 +26,7 @@ interface TableProps {
   itemClassname?: string;
   filterFormik?: FormikProps<TableFilterFormProps>;
   countryData?: CountryDataDto;
+  onSwipeRemove?: (index: GuestModel) => void;
 }
 
 const Table: React.FC<TableProps> = ({
@@ -32,6 +40,7 @@ const Table: React.FC<TableProps> = ({
   isFiltering = false,
   filterFormik,
   countryData,
+  onSwipeRemove,
 }) => {
   const getPageNumber = () => {
     const pageNumbers: DetailedHTMLProps<
@@ -193,36 +202,14 @@ const Table: React.FC<TableProps> = ({
         ))}
       </div>
       <div className="w-full h-[90%] flex flex-col justify-between overflow-hidden">
-        <div className="flex flex-col overflow-y-auto">
+        <div className=" flex flex-col overflow-y-auto">
           {tableItems.map((x, index) => (
-            <div
-              className={`py-1 px-1 text-xs grid grid-cols-5 ${
-                tableHeaders.length === 5 ? "grid-cols-5" : "grid-cols-4"
-              }`}
-              key={`${x}${index}`}
-            >
-              <div className="px-2 flex items-center md:justify-center">
-                {x.name}
-              </div>
-              <div className="px-2 py-1 flex items-center md:justify-center">
-                {new Date(parseInt(x.rsvpDateTime)).toLocaleString("en-GB")}
-              </div>
-              <div className="px-2 flex items-center justify-center">
-                {x.invitedBy}
-              </div>
-              <div className="px-2 flex justify-center items-center">
-                {x.isAttending ? (
-                  "Yes"
-                ) : (
-                  <p className="font-semibold bg-red-500 w-full text-center text-white">
-                    No
-                  </p>
-                )}
-              </div>
-              <div className="px-2 flex items-center justify-center">
-                {x.dietaryPreference}
-              </div>
-            </div>
+            <TableSwipeItem
+              index={index}
+              item={x}
+              tableHeaders={tableHeaders}
+              onRemove={onSwipeRemove!}
+            />
           ))}
         </div>
         <div className="w-full h-fit flex overflow-y-auto items-center space-x-2">

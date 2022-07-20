@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import * as models from "../models";
-import { PaginateRequest } from "../models/common";
+import { GuestModel } from "../models";
+import { PaginateRequest, UpdateGuest } from "../models/common";
 
 axios.defaults.baseURL =
   process.env.NODE_ENV === "production"
@@ -27,7 +28,8 @@ const requests = {
     axios.get(url, { params: params }).then(responseBody),
   post: (url: string, body: {}) => axios.post(url, body).then(responseBody),
   put: (url: string, body: {}) => axios.put(url, body).then(responseBody),
-  del: (url: string) => axios.delete(url).then(responseBody),
+  del: (url: string, params?: {}) =>
+    axios.delete(url, { params: params }).then(responseBody),
 };
 
 const WeddingInfo = {
@@ -37,6 +39,8 @@ const WeddingInfo = {
   guests: (paginateRequest: PaginateRequest) =>
     requests.get(`/guests`, paginateRequest),
   dashboard: () => requests.get(`/dashboard`),
+  updateGuest: (updateGuest: UpdateGuest) =>
+    requests.del(`/guest/isactive`, updateGuest),
 };
 
 export default {
