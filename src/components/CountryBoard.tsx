@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { TableFilterFormProps } from "../app/models";
 import { PaginateRequest, PaginationDto } from "../app/models/common";
-import { getGuests } from "../app/slice/weddinginfoSlice";
+import { getDashboard, getGuests } from "../app/slice/weddinginfoSlice";
 import { RootState } from "../app/store";
 import * as constants from "../app/utils/constants";
 import LoadingBackdrop from "./ui/LoadingBackdrop";
@@ -47,17 +47,6 @@ const CountryBoard: React.FC<CountryBoardProps> = ({}) => {
       country: slug!,
     });
   };
-
-  // let paginateParams = {
-  //   country: slug!,
-  //   currentPageNumber: 1,
-  //   pageSize: 10,
-  //   orderBy: "sortOrder",
-  //   orderByDirection: "desc",
-  //   searchString: "",
-  //   isAttendingFilter: "",
-  //   invitedBy: "",
-  // } as PaginateRequest;
 
   const FilterByValidation = Yup.object({
     name: Yup.string()
@@ -115,40 +104,42 @@ const CountryBoard: React.FC<CountryBoardProps> = ({}) => {
     });
 
   useEffect(() => {
-    // if (
-    //   weddingInfoState.singapore.totalRecords === 0 ||
-    //   weddingInfoState.malaysia.totalRecords === 0
-    // ) {
+    if (slug !== undefined) {
+      dispatch(
+        getGuests({
+          ...paginateParams,
+          currentPageNumber: 1,
+          pageSize: 10,
+          orderBy: "sortOrder",
+          orderByDirection: "desc",
+          searchString: "",
+          isAttendingFilter: "",
+          invitedBy: "",
+          country: slug!,
+        })
+      );
 
-    // }
-
-    dispatch(
-      getGuests({
+      setPaginateParams({
         ...paginateParams,
         currentPageNumber: 1,
-        pageSize: 10,
-        orderBy: "sortOrder",
-        orderByDirection: "desc",
-        searchString: "",
-        isAttendingFilter: "",
-        invitedBy: "",
         country: slug!,
-      })
-    );
+      });
 
-    setPaginateParams({
-      ...paginateParams,
-      currentPageNumber: 1,
-      country: slug!,
-    });
+      setData(
+        slug! === constants.SG
+          ? weddingInfoState.singapore
+          : weddingInfoState.malaysia
+      );
 
-    setData(
-      slug! === constants.SG
-        ? weddingInfoState.singapore
-        : weddingInfoState.malaysia
-    );
+      filterInputFormik.resetForm();
 
-    filterInputFormik.resetForm();
+      if (
+        weddingInfoState.dashboard === undefined ||
+        weddingInfoState.dashboard!.my.expectedGuest === 0
+      ) {
+        dispatch(getDashboard());
+      }
+    }
   }, [slug!]);
 
   return (
@@ -174,12 +165,17 @@ const CountryBoard: React.FC<CountryBoardProps> = ({}) => {
             />
           ) : (
             <Table
-              tableHeaders={[
-                "name",
-                "rsvp datetime",
-                "invited by",
-                "attending?",
-              ]}
+              tableHeaders={
+                slug! === constants.SG
+                  ? [
+                      "name",
+                      "rsvp datetime",
+                      "invited by",
+                      "attending?",
+                      "dietary preference",
+                    ]
+                  : ["name", "rsvp datetime", "invited by", "attending?"]
+              }
               tableItems={
                 slug! === constants.SG
                   ? weddingInfoState.singapore.items

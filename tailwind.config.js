@@ -3,6 +3,8 @@ module.exports = {
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     screens: {
+      mini: "200px",
+      // => @media (min-width: 200px) { ... }
       xs: "380px",
       // => @media (min-width: 380px) { ... }
       sm: "640px",
@@ -63,6 +65,9 @@ module.exports = {
       },
       zIndex: {
         max: "9999",
+      },
+      fontSize: {
+        mini: "0.65rem",
       },
     },
   },

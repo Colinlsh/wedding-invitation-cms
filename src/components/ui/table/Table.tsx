@@ -56,6 +56,7 @@ const Table: React.FC<TableProps> = ({
 
     return pageNumbers;
   };
+
   return (
     <div className="table-fixed flex flex-col p-2 rounded-lg backdrop-blur-sm text-sm w-full h-full bg-slate-100 z-0">
       <div
@@ -178,11 +179,13 @@ const Table: React.FC<TableProps> = ({
         </div>
       </div>
       <div
-        className={`w-full grid grid-cols-4 items-center border-b-2 border-b-linkedinShade ${headerClassname}`}
+        className={`w-full grid  items-center border-b-2 border-b-linkedinShade ${headerClassname} ${
+          tableHeaders.length === 5 ? "grid-cols-5" : "grid-cols-4"
+        }`}
       >
         {tableHeaders.map((x, index) => (
           <div
-            className="flex py-1 px-1 text-xs justify-center font-bold text-center"
+            className="flex px-1 text-mini justify-center font-bold text-center"
             key={index}
           >
             {x.toLocaleUpperCase()}
@@ -193,7 +196,9 @@ const Table: React.FC<TableProps> = ({
         <div className="flex flex-col overflow-y-auto">
           {tableItems.map((x, index) => (
             <div
-              className="py-1 px-1 text-xs grid grid-cols-4"
+              className={`py-1 px-1 text-xs grid grid-cols-5 ${
+                tableHeaders.length === 5 ? "grid-cols-5" : "grid-cols-4"
+              }`}
               key={`${x}${index}`}
             >
               <div className="px-2 flex items-center md:justify-center">
@@ -213,6 +218,9 @@ const Table: React.FC<TableProps> = ({
                     No
                   </p>
                 )}
+              </div>
+              <div className="px-2 flex items-center justify-center">
+                {x.dietaryPreference}
               </div>
             </div>
           ))}
