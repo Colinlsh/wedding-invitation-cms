@@ -172,7 +172,7 @@ const CountryBoard: React.FC<CountryBoardProps> = ({}) => {
             <img src="/assets/malaysia.svg" alt="my" className="h-5" />
           </div>
         )}
-        CountryBoard
+        <div>CountryBoard</div>
       </h1>
       <div className="drop-shadow-xl rounded-lg h-[90%]">
         {data !== undefined ? (
