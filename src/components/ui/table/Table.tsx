@@ -1,17 +1,11 @@
 import { FormikProps } from "formik";
-import React, {
-  DetailedHTMLProps,
-  HTMLAttributes,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { DetailedHTMLProps, HTMLAttributes } from "react";
 import {
   CountryDataDto,
   GuestModel,
   TableFilterFormProps,
 } from "../../../app/models";
-import { PaginationDto, SwipingState } from "../../../app/models/common";
+import { PaginationDto } from "../../../app/models/common";
 import Dropdown from "../Dropdown";
 import TableSwipeItem from "./TableSwipeItem";
 
@@ -26,7 +20,7 @@ interface TableProps {
   itemClassname?: string;
   filterFormik?: FormikProps<TableFilterFormProps>;
   countryData?: CountryDataDto;
-  onSwipeRemove?: (index: GuestModel) => void;
+  onSwipeRemove?: (guest: GuestModel) => void;
 }
 
 const Table: React.FC<TableProps> = ({
@@ -205,10 +199,10 @@ const Table: React.FC<TableProps> = ({
         <div className=" flex flex-col overflow-y-auto">
           {tableItems.map((x, index) => (
             <TableSwipeItem
-              index={index}
+              key={`${x}${index}`}
               item={x}
               tableHeaders={tableHeaders}
-              onRemove={onSwipeRemove!}
+              onRemove={onSwipeRemove}
             />
           ))}
         </div>

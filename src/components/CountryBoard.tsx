@@ -2,9 +2,13 @@ import { FormikProps, useFormik } from "formik";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
-import { TableFilterFormProps } from "../app/models";
-import { PaginateRequest, PaginationDto } from "../app/models/common";
-import { getDashboard, getGuests } from "../app/slice/weddinginfoSlice";
+import { GuestModel, TableFilterFormProps } from "../app/models";
+import { PaginationDto } from "../app/models/common";
+import {
+  getDashboard,
+  getGuests,
+  updateGuest,
+} from "../app/slice/weddinginfoSlice";
 import { RootState } from "../app/store";
 import * as constants from "../app/utils/constants";
 import LoadingBackdrop from "./ui/LoadingBackdrop";
@@ -19,6 +23,7 @@ const CountryBoard: React.FC<CountryBoardProps> = ({}) => {
     (state: RootState) => state.weddingInfoState
   );
   const dispatch = useAppDispatch();
+
   let { slug: slug } = useParams();
   const [data, setData] = useState<PaginationDto>();
   const [paginateParams, setPaginateParams] = useState({
@@ -32,6 +37,15 @@ const CountryBoard: React.FC<CountryBoardProps> = ({}) => {
     invitedBy: "",
   });
   // #endregion
+
+  const handleSwipeRemove = (guest: GuestModel) => {
+    dispatch(
+      updateGuest({
+        guest: { ...guest, isActive: false },
+        paginateRequest: paginateParams,
+      })
+    );
+  };
 
   const handleOnPageNumClick = (pageNum: number) => {
     dispatch(
@@ -159,10 +173,7 @@ const CountryBoard: React.FC<CountryBoardProps> = ({}) => {
       <div className="drop-shadow-xl rounded-lg h-[90%]">
         {data !== undefined ? (
           data!.isLoading ? (
-            <LoadingBackdrop
-              backdropClassname="transparent"
-              spinnerClassname="text-black"
-            />
+            <LoadingBackdrop spinnerClassname="text-black" />
           ) : (
             <Table
               tableHeaders={
@@ -195,6 +206,7 @@ const CountryBoard: React.FC<CountryBoardProps> = ({}) => {
                   ? weddingInfoState.dashboard!.sg
                   : weddingInfoState.dashboard!.my
               }
+              onSwipeRemove={handleSwipeRemove}
             />
           )
         ) : (

@@ -40,7 +40,7 @@ const WeddingInfo = {
     requests.get(`/guests`, paginateRequest),
   dashboard: () => requests.get(`/dashboard`),
   updateGuest: (updateGuest: UpdateGuest) =>
-    requests.del(`/guest/isactive`, updateGuest),
+    requests.put(`/guest/updateGuest`, updateGuest),
 };
 
 export default {

@@ -32,5 +32,5 @@ export type SwipingState = {
 
 export type UpdateGuest = {
   guest: GuestModel;
-  country: string;
+  paginateRequest: PaginateRequest;
 };

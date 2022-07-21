@@ -105,7 +105,7 @@ export const updateGuest = createAsyncThunk(
 
       return {
         name: "delete",
-        value: [response],
+        value: [updateGuest, response],
       };
     } catch (error) {
       return {
@@ -337,13 +337,26 @@ const weddingInfoSlice: Slice<
       state.attendanceForm.isLoading = false;
     });
 
-    builder.addCase(updateGuest.pending, (state, { meta }) => {});
+    builder.addCase(updateGuest.pending, (state, { meta }) => {
+      const country = (meta.arg as UpdateGuest).paginateRequest.country;
+
+      if (country !== constants.SG) {
+        state.malaysia.isLoading = true;
+        state.malaysia.items = [];
+      } else {
+        state.singapore.isLoading = true;
+        state.singapore.items = [];
+      }
+    });
     builder.addCase(
       updateGuest.fulfilled,
       (state, action: PayloadAction<KeyValuePair>) => {
         let { name, value } = action.payload;
         if (value[0] !== -1) {
-          if ((value[0] as string).toLowerCase() === constants.SG) {
+          if (
+            (value[0].paginateRequest as PaginateRequest).country ===
+            constants.SG
+          ) {
             state.singapore = value[1];
           } else {
             state.malaysia = value[1];
@@ -353,7 +366,17 @@ const weddingInfoSlice: Slice<
         }
       }
     );
-    builder.addCase(updateGuest.rejected, (state, { meta }) => {});
+    builder.addCase(updateGuest.rejected, (state, { meta }) => {
+      const country = (meta.arg as UpdateGuest).paginateRequest.country;
+
+      if (country !== constants.SG) {
+        state.malaysia.isLoading = false;
+        state.malaysia.items = [];
+      } else {
+        state.singapore.isLoading = false;
+        state.singapore.items = [];
+      }
+    });
   },
 });
 

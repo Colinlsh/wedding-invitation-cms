@@ -5,14 +5,12 @@ import { ImBin } from "react-icons/im";
 import { IoCloseSharp } from "react-icons/io5";
 
 interface TableSwipeItemProps {
-  index: number;
   item: GuestModel;
   tableHeaders: string[];
-  onRemove?: (index: GuestModel) => void;
+  onRemove?: (guestModel: GuestModel) => void;
 }
 
 const TableSwipeItem: React.FC<TableSwipeItemProps> = ({
-  index,
   item,
   tableHeaders,
   onRemove,
@@ -38,11 +36,7 @@ const TableSwipeItem: React.FC<TableSwipeItemProps> = ({
       const velocity = (20 * (touchX - swipeState.prevTouchX)) / elapsed;
       let deltaX = touchX - swipeState.touchStartX + swipeState.originalOffset;
       if (deltaX < -200) {
-        console.log("remove here");
         setWantRemove(true);
-        if (onRemove !== undefined) {
-          onRemove(item);
-        }
       } else if (deltaX > 0) {
         deltaX = 0;
       }
@@ -53,14 +47,11 @@ const TableSwipeItem: React.FC<TableSwipeItemProps> = ({
         timeOfLastDragEvent: currTime,
         prevTouchX: touchX,
       });
-
-      console.log(deltaX);
     }
   };
 
   useEffect(() => {
     if (!swipeState.beingTouched && swipeState.left < -0.01) {
-      console.log("..... in use effect");
       let velocity = swipeState.velocity + 10 * 0.033;
       setSwipeState({
         ...swipeState,
@@ -93,7 +84,6 @@ const TableSwipeItem: React.FC<TableSwipeItemProps> = ({
   const handleTouchStart = (
     touchStartEvent: React.TouchEvent<HTMLDivElement>
   ) => {
-    console.log("TOUCH");
     handleStart(touchStartEvent.targetTouches[0].clientX);
   };
 
@@ -129,8 +119,7 @@ const TableSwipeItem: React.FC<TableSwipeItemProps> = ({
   };
   return (
     <div
-      className={`py-1 px-1 text-xs w-full h-full flex relative transition-width duration-500`}
-      key={`${item}${index}`}
+      className={`py-1 px-1 text-xs w-full h-full flex relative transition-width duration-500 cursor-pointer`}
       onTouchStart={(e) => handleTouchStart(e)}
       onTouchMove={(e) => handleTouchMove(e)}
       onTouchEnd={() => handleTouchEnd()}
@@ -162,12 +151,16 @@ const TableSwipeItem: React.FC<TableSwipeItemProps> = ({
           {item.isAttending ? (
             "Yes"
           ) : (
-            <p className="font-semibold bg-red-500 w-full text-center text-white">
+            <p className="font-semibold bg-red-500 h-full w-full text-center text-white flex justify-center items-center">
               No
             </p>
           )}
         </div>
-        <div className="px-2 flex items-center justify-center">
+        <div
+          className={`px-2 flex items-center justify-center ${
+            item.dietaryPreference !== "" ? "bg-green-400" : ""
+          }`}
+        >
           {item.dietaryPreference}
         </div>
       </div>
@@ -177,14 +170,19 @@ const TableSwipeItem: React.FC<TableSwipeItemProps> = ({
         }`}
       >
         <div
-          className="p-1 bg-green-400 h-full w-full justify-center flex items-center"
+          className="p-1 bg-green-400 h-full w-full justify-center flex items-center cursor-pointer"
           onClick={() => setWantRemove(false)}
         >
           <IoCloseSharp />
         </div>
         <div
-          className="p-1 bg-red-400 h-full w-full flex justify-center items-center"
-          onClick={() => setWantRemove(false)}
+          className="p-1 bg-red-400 h-full w-full flex justify-center items-center cursor-pointer"
+          onClick={() => {
+            if (onRemove !== undefined) {
+              onRemove(item);
+            }
+            setWantRemove(false);
+          }}
         >
           <ImBin />
         </div>
