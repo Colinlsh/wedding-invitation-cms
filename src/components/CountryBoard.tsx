@@ -147,14 +147,18 @@ const CountryBoard: React.FC<CountryBoardProps> = ({}) => {
 
       filterInputFormik.resetForm();
 
-      if (
-        weddingInfoState.dashboard === undefined ||
-        weddingInfoState.dashboard!.my.expectedGuest === 0
-      ) {
+      if (weddingInfoState.dashboard === undefined) {
         dispatch(getDashboard());
       }
     }
   }, [slug!]);
+
+  useEffect(() => {
+    dispatch(getDashboard());
+  }, [
+    weddingInfoState.malaysia.isLoading,
+    weddingInfoState.singapore.isLoading,
+  ]);
 
   return (
     <div className="w-full h-full p-5">
