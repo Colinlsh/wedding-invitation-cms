@@ -35,8 +35,8 @@ const NavBar = () => {
       </div>
 
       <div
-        className={`fixed top-16 right-10 transition-all duration-700 rounded-lg md:hidden ${
-          navbar ? "opacity-1 z-10" : "opacity-0 translate-x-10 -z-10"
+        className={`fixed top-16 -right-64 transition-all duration-700 rounded-lg md:hidden z-10 ${
+          navbar ? "-translate-x-72" : ""
         } bg-linkedinShade`}
       >
         <div className="flex flex-col justify-between">
@@ -44,9 +44,7 @@ const NavBar = () => {
             <NavbarItem
               icon={<MdDashboard className="text-white" size={25} />}
               name="Dashboard"
-              className={`flex justify-center items-center p-5 cursor-pointer space-x-2 ${
-                selectedNav === 0 ? "bg-white bg-opacity-50" : ""
-              }`}
+              isSelected={selectedNav === 0}
               onClick={() => {
                 navigate("/");
                 setNavbar(false);
@@ -58,9 +56,7 @@ const NavBar = () => {
                 <img src="/assets/singapore.svg" alt="sgs" className="h-5" />
               }
               name="Singapore"
-              className={`flex justify-center items-center p-5 cursor-pointer space-x-2 ${
-                selectedNav === 1 ? "bg-white bg-opacity-50" : ""
-              }`}
+              isSelected={selectedNav === 1}
               onClick={() => {
                 navigate("/sg");
                 setNavbar(false);
@@ -70,9 +66,7 @@ const NavBar = () => {
             <NavbarItem
               icon={<img src="/assets/malaysia.svg" alt="my" className="h-5" />}
               name="Malaysia"
-              className={`flex justify-center items-center p-5 cursor-pointer space-x-2 ${
-                selectedNav === 2 ? "bg-white bg-opacity-50" : ""
-              }`}
+              isSelected={selectedNav === 2}
               onClick={() => {
                 navigate("/my");
                 setNavbar(false);
@@ -108,9 +102,7 @@ const NavBar = () => {
             <NavbarItem
               icon={<MdDashboard className="text-white" size={25} />}
               name="Dashboard"
-              className={`rounded-xl flex justify-center items-center p-2 cursor-pointer ${
-                selectedNav === 0 ? "bg-white bg-opacity-50" : ""
-              } ${navbar ? "space-x-2" : ""}`}
+              isSelected={selectedNav === 0}
               isShow={navbar}
               onClick={() => {
                 navigate("/");
@@ -122,9 +114,7 @@ const NavBar = () => {
                 <img src="/assets/singapore.svg" alt="sgs" className="h-5" />
               }
               name="Singapore"
-              className={`rounded-xl flex justify-center items-center p-2 cursor-pointer ${
-                selectedNav === 1 ? "bg-white bg-opacity-50" : ""
-              } ${navbar ? "space-x-2" : ""}`}
+              isSelected={selectedNav === 1}
               isShow={navbar}
               onClick={() => {
                 navigate("/sg");
@@ -134,9 +124,7 @@ const NavBar = () => {
             <NavbarItem
               icon={<img src="/assets/malaysia.svg" alt="my" className="h-5" />}
               name="Malaysia"
-              className={`rounded-xl flex justify-center items-center p-2 cursor-pointer ${
-                selectedNav === 2 ? "bg-white bg-opacity-50" : ""
-              } ${navbar ? "space-x-2" : ""}`}
+              isSelected={selectedNav === 2}
               isShow={navbar}
               onClick={() => {
                 navigate("/my");
